@@ -1,4 +1,29 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
+function randomSixDigits() {
+  return [...Array(6)].map(() => Math.floor(Math.random() * 10));
+}
+
+function IntervalNumber() {
+  const [number, setNumber] = useState(randomSixDigits());
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setNumber(randomSixDigits());
+    }, [30000]);
+    return () => clearTimeout(timeout);
+  }, [number]);
+
+  return (
+    <div style={{ fontSize: "1.5rem", color: "blueviolet" }}>
+      {number.map((num, i) => (
+        <span key={i} style={{ marginLeft: i === 3 ? "0.75rem" : 0 }}>
+          {num}
+        </span>
+      ))}
+    </div>
+  );
+}
 
 function App() {
   const [accounts, setAccounts] = useState([{ name: "Google", code: "1" }]);
@@ -121,9 +146,7 @@ function App() {
               }}
             >
               <div style={{ fontSize: "1.25rem" }}>{item.name}</div>
-              <div style={{ fontSize: "1.5rem", color: "blueviolet" }}>
-                181 951
-              </div>
+              <IntervalNumber />
             </li>
           ))}
         </ul>
