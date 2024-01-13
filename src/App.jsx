@@ -2,26 +2,46 @@ import { useState } from "react";
 
 function App() {
   const [accounts, setAccounts] = useState([{ name: "Google", code: "1" }]);
+  const [creating, setCreating] = useState(false);
 
   return (
     <div style={{ maxWidth: 400, margin: "auto" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
         <h1 style={{ flex: "auto" }}>Authenticator</h1>
-        <button
-          style={{
-            display: "flex",
-            backgroundColor: "violet",
-            color: "#fff",
-            border: "none",
-            padding: "0.5rem 1rem",
-            fontSize: "1rem",
-            fontWeight: 500,
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          New
-        </button>
+        {creating ? (
+          <button
+            style={{
+              display: "flex",
+              backgroundColor: "lightgrey",
+              border: "none",
+              padding: "0.5rem 1rem",
+              fontSize: "1rem",
+              fontWeight: 500,
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+            onClick={() => setCreating(false)}
+          >
+            Cancel
+          </button>
+        ) : (
+          <button
+            style={{
+              display: "flex",
+              backgroundColor: "violet",
+              color: "#fff",
+              border: "none",
+              padding: "0.5rem 1rem",
+              fontSize: "1rem",
+              fontWeight: 500,
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+            onClick={() => setCreating(true)}
+          >
+            New
+          </button>
+        )}
       </div>
       <ul
         style={{
