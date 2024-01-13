@@ -1,4 +1,8 @@
+import { useState } from "react";
+
 function App() {
+  const [accounts, setAccounts] = useState([{ name: "Google", code: "1" }]);
+
   return (
     <div style={{ maxWidth: 400, margin: "auto" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -28,9 +32,9 @@ function App() {
           listStyle: "none",
         }}
       >
-        {[...Array(10)].map((_, i) => (
+        {accounts.map((item) => (
           <li
-            key={i}
+            key={item.code}
             style={{
               borderBottom: "1px solid rgba(0 0 0 / 0.12)",
               paddingBlock: "0.5rem",
