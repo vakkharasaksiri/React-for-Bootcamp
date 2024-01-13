@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import jsQR from "jsqr";
 
 function randomSixDigits() {
   return [...Array(6)].map(() => Math.floor(Math.random() * 10));
@@ -88,29 +89,127 @@ function App() {
               borderRadius: "4px",
               cursor: "pointer",
             }}
-            onClick={() => setCreating(false)}
+            onClick={() => {
+              setCreating(false);
+            }}
           >
             Cancel
           </button>
         ) : (
-          <button
-            style={{
-              display: "flex",
-              backgroundColor: "violet",
-              color: "#fff",
-              border: "none",
-              padding: "0.5rem 1rem",
-              fontSize: "1rem",
-              fontWeight: 500,
-              borderRadius: "4px",
-              cursor: "pointer",
-            }}
-            onClick={() => setCreating(true)}
-          >
-            New
-          </button>
+          [
+            <label
+              key="qr-image"
+              style={{
+                display: "flex",
+                backgroundColor: "lightgrey",
+                border: "none",
+                padding: "0.5rem",
+                fontSize: "1rem",
+                fontWeight: 500,
+                borderRadius: "4px",
+                cursor: "pointer",
+                lineHeight: "normal",
+              }}
+              onClick={() => {
+                setExisted(false);
+              }}
+            >
+              QR
+              <input
+                type="file"
+                style={{
+                  clip: "rect(0 0 0 0)",
+                  clipPath: "inset(50%)",
+                  height: "1px",
+                  overflow: "hidden",
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  whiteSpace: "nowrap",
+                  width: "1px",
+                }}
+                accept="image/*"
+                onChange={(event) => {
+                  const canvas = document.createElement("canvas");
+                  const ctx = canvas.getContext("2d");
+                  const img = new Image();
+                  img.onload = () => {
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    const imageData = ctx.getImageData(
+                      0,
+                      0,
+                      canvas.width,
+                      canvas.height
+                    );
+                    const code = jsQR(
+                      imageData.data,
+                      imageData.width,
+                      imageData.height
+                    );
+                    canvas.remove();
+                    if (code?.data) {
+                      const searchParams = new URLSearchParams(code.data);
+                      if (
+                        accounts.find(
+                          (item) => item.code === searchParams.get("code")
+                        )
+                      ) {
+                        setExisted(true);
+                        return;
+                      }
+                      setAccounts((prev) => [
+                        ...prev,
+                        {
+                          name: searchParams.get("name") || "Unknown",
+                          code: searchParams.get("code"),
+                        },
+                      ]);
+                    }
+                  };
+                  img.src = URL.createObjectURL(event.target.files[0]);
+                  event.target.value = "";
+                }}
+              />
+            </label>,
+            <button
+              key="new-account"
+              style={{
+                display: "flex",
+                backgroundColor: "violet",
+                color: "#fff",
+                border: "none",
+                padding: "0.5rem 1rem",
+                fontSize: "1rem",
+                fontWeight: 500,
+                borderRadius: "4px",
+                cursor: "pointer",
+                marginLeft: "0.5rem",
+              }}
+              onClick={() => {
+                setCreating(true);
+                setExisted(false);
+              }}
+            >
+              New
+            </button>,
+          ]
         )}
       </div>
+      {existed && (
+        <div
+          style={{
+            gridColumn: "span 2",
+            backgroundColor: "lightsalmon",
+            borderRadius: "4px",
+            padding: "0.5rem 0.75rem",
+            marginBottom: "1rem",
+          }}
+        >
+          ⚠️ Account existed! Please try another code.
+        </div>
+      )}
       {creating && (
         <div
           style={{
@@ -119,19 +218,6 @@ function App() {
             gap: "1rem",
           }}
         >
-          {existed && (
-            <div
-              style={{
-                gridColumn: "span 2",
-                backgroundColor: "lightsalmon",
-                borderRadius: "4px",
-                padding: "0.5rem 0.75rem",
-                marginBottom: "1rem",
-              }}
-            >
-              ⚠️ Account existed! Please try another code.
-            </div>
-          )}
           <label htmlFor="account-name">Name: </label>
           <input
             id="account-name"
