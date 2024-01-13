@@ -88,7 +88,10 @@ function App() {
                 setExisted(true);
                 return;
               }
-              setAccounts((prev) => [...prev, { name, code }]);
+              setAccounts((prev) => [
+                ...prev,
+                { name: name || "Unknown", code },
+              ]);
               setCreating(false);
               setExisted(false);
               setName("");
