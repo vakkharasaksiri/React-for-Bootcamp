@@ -6,6 +6,7 @@ function App() {
 
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
+  const [existed, setExisted] = useState(false);
 
   return (
     <div style={{ maxWidth: 400, margin: "auto" }}>
@@ -54,6 +55,19 @@ function App() {
             gap: "1rem",
           }}
         >
+          {existed && (
+            <div
+              style={{
+                gridColumn: "span 2",
+                backgroundColor: "lightsalmon",
+                borderRadius: "4px",
+                padding: "0.5rem 0.75rem",
+                marginBottom: "1rem",
+              }}
+            >
+              ⚠️ Account existed! Please try another code.
+            </div>
+          )}
           <label htmlFor="account-name">Name: </label>
           <input
             id="account-name"
@@ -70,8 +84,13 @@ function App() {
           />
           <button
             onClick={() => {
+              if (accounts.find((item) => item.code === code)) {
+                setExisted(true);
+                return;
+              }
               setAccounts((prev) => [...prev, { name, code }]);
               setCreating(false);
+              setExisted(false);
               setName("");
               setCode("");
             }}
