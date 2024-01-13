@@ -4,6 +4,9 @@ function App() {
   const [accounts, setAccounts] = useState([{ name: "Google", code: "1" }]);
   const [creating, setCreating] = useState(false);
 
+  const [name, setName] = useState("");
+  const [code, setCode] = useState("");
+
   return (
     <div style={{ maxWidth: 400, margin: "auto" }}>
       <div style={{ display: "flex", alignItems: "center" }}>
@@ -43,30 +46,66 @@ function App() {
           </button>
         )}
       </div>
-      <ul
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          margin: 0,
-          padding: 0,
-          listStyle: "none",
-        }}
-      >
-        {accounts.map((item) => (
-          <li
-            key={item.code}
-            style={{
-              borderBottom: "1px solid rgba(0 0 0 / 0.12)",
-              paddingBlock: "0.5rem",
+      {creating && (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "auto 1fr",
+            gap: "1rem",
+          }}
+        >
+          <label htmlFor="account-name">Name: </label>
+          <input
+            id="account-name"
+            placeholder="Name"
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+          <label htmlFor="account-code">Code: </label>
+          <input
+            id="account-code"
+            placeholder="Code"
+            value={code}
+            onChange={(event) => setCode(event.target.value)}
+          />
+          <button
+            onClick={() => {
+              setAccounts((prev) => [...prev, { name, code }]);
+              setCreating(false);
+              setName("");
+              setCode("");
             }}
           >
-            <div style={{ fontSize: "1.25rem" }}>Google</div>
-            <div style={{ fontSize: "1.5rem", color: "blueviolet" }}>
-              181 951
-            </div>
-          </li>
-        ))}
-      </ul>
+            Submit
+          </button>
+        </div>
+      )}
+      {!creating && (
+        <ul
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            margin: 0,
+            padding: 0,
+            listStyle: "none",
+          }}
+        >
+          {accounts.map((item) => (
+            <li
+              key={item.code}
+              style={{
+                borderBottom: "1px solid rgba(0 0 0 / 0.12)",
+                paddingBlock: "0.5rem",
+              }}
+            >
+              <div style={{ fontSize: "1.25rem" }}>{item.name}</div>
+              <div style={{ fontSize: "1.5rem", color: "blueviolet" }}>
+                181 951
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
