@@ -25,12 +25,24 @@ function IntervalNumber() {
   }, [turn, duration]);
 
   return (
-    <div
+    <button
       style={{
         fontSize: "1.5rem",
         color: "blueviolet",
         display: "flex",
         alignItems: "center",
+        width: "100%",
+        border: "none",
+        background: "none",
+        padding: 0,
+        cursor: "pointer",
+      }}
+      onClick={async () => {
+        try {
+          await navigator.clipboard.writeText(number.join(""));
+        } catch (error) {
+          console.warn("Copy failed", error);
+        }
       }}
     >
       {number.map((num, i) => (
@@ -48,7 +60,7 @@ function IntervalNumber() {
           background: `conic-gradient(transparent 0deg, transparent ${turn}turn, violet ${turn}turn)`,
         }}
       />
-    </div>
+    </button>
   );
 }
 
