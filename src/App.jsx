@@ -6,21 +6,48 @@ function randomSixDigits() {
 
 function IntervalNumber() {
   const [number, setNumber] = useState(randomSixDigits());
+  const [turn, setTurn] = useState(0); // 0 - 1 in 30s
+  const duration = 20; // 30s
 
   useEffect(() => {
     const timeout = setTimeout(() => {
       setNumber(randomSixDigits());
-    }, [30000]);
+      setTurn(0);
+    }, [duration * 1000]);
     return () => clearTimeout(timeout);
-  }, [number]);
+  }, [number, duration]);
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setTurn((prev) => prev + 1 / duration);
+    }, [1000]);
+    return () => clearTimeout(timeout);
+  }, [turn, duration]);
 
   return (
-    <div style={{ fontSize: "1.5rem", color: "blueviolet" }}>
+    <div
+      style={{
+        fontSize: "1.5rem",
+        color: "blueviolet",
+        display: "flex",
+        alignItems: "center",
+      }}
+    >
       {number.map((num, i) => (
         <span key={i} style={{ marginLeft: i === 3 ? "0.75rem" : 0 }}>
           {num}
         </span>
       ))}
+      <span
+        style={{
+          marginLeft: "auto",
+          display: "block",
+          width: 36,
+          height: 36,
+          borderRadius: "50%",
+          background: `conic-gradient(transparent 0deg, transparent ${turn}turn, violet ${turn}turn)`,
+        }}
+      />
     </div>
   );
 }
