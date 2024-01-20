@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import jsQR from "jsqr";
 
 function randomSixDigits() {
@@ -68,10 +68,93 @@ function IntervalNumber() {
 function App() {
   const [accounts, setAccounts] = useState([{ name: "Google", code: "1" }]);
   const [creating, setCreating] = useState(false);
+  const [capturing, setCapturing] = useState(false);
+  const videoRef = useRef(null);
 
   const [name, setName] = useState("");
   const [code, setCode] = useState("");
   const [existed, setExisted] = useState(false);
+
+  useEffect(() => {
+    if (capturing && videoRef.current) {
+      const video = videoRef.current;
+      const canvasElement = document.createElement("canvas");
+      canvasElement.hidden = true;
+      const canvas = canvasElement.getContext("2d", {
+        willReadFrequently: true,
+      });
+
+      // eslint-disable-next-line no-inner-declarations
+      function tick() {
+        let code;
+        if (video.readyState === video.HAVE_ENOUGH_DATA) {
+          canvasElement.height = video.videoHeight;
+          canvasElement.width = video.videoWidth;
+          canvas.drawImage(
+            video,
+            0,
+            0,
+            canvasElement.width,
+            canvasElement.height
+          );
+          const imageData = canvas.getImageData(
+            0,
+            0,
+            canvasElement.width,
+            canvasElement.height
+          );
+          code = jsQR(imageData.data, imageData.width, imageData.height, {
+            inversionAttempts: "dontInvert",
+          });
+          if (code?.data) {
+            const searchParams = new URLSearchParams(code.data);
+            if (
+              accounts.find((item) => item.code === searchParams.get("code"))
+            ) {
+              setExisted(true);
+              code = null;
+            } else {
+              setAccounts((prev) => [
+                ...prev,
+                {
+                  name: searchParams.get("name") || "Unknown",
+                  code: searchParams.get("code"),
+                },
+              ]);
+              setExisted(false);
+              setCapturing(false);
+            }
+          } else {
+            code = null;
+          }
+        }
+        if (!code) {
+          requestAnimationFrame(tick);
+        }
+      }
+
+      // Use facingMode: environment to attemt to get the front camera on phones
+      navigator.mediaDevices
+        .getUserMedia({ video: { facingMode: "environment" } })
+        .then(function (stream) {
+          video.srcObject = stream;
+          video.setAttribute("playsinline", true); // required to tell iOS safari we don't want fullscreen
+          video.play();
+          requestAnimationFrame(tick);
+        });
+
+      return () => {
+        const stream = video.srcObject;
+        const tracks = stream.getTracks();
+
+        tracks.forEach(function (track) {
+          track.stop();
+        });
+
+        video.srcObject = null;
+      };
+    }
+  }, [capturing]);
 
   return (
     <div style={{ maxWidth: 400, margin: "auto" }}>
@@ -97,6 +180,59 @@ function App() {
           </button>
         ) : (
           [
+            <button
+              key="qr-camera"
+              style={{
+                display: "flex",
+                backgroundColor: "lightgrey",
+                border: "none",
+                padding: "0.5rem",
+                fontSize: "1rem",
+                lineHeight: "normal",
+                fontWeight: 500,
+                borderRadius: "4px",
+                cursor: "pointer",
+              }}
+              onClick={() => setCapturing(!capturing)}
+            >
+              {capturing ? (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                  style={{ width: "1em", height: "1em", fontSize: "19.5px" }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18 18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={1.5}
+                  stroke="currentColor"
+                  style={{ width: "1em", height: "1em", fontSize: "19.5px" }}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z"
+                  />
+                </svg>
+              )}
+            </button>,
             <label
               key="qr-image"
               style={{
@@ -109,6 +245,7 @@ function App() {
                 borderRadius: "4px",
                 cursor: "pointer",
                 lineHeight: "normal",
+                marginLeft: "0.5rem",
               }}
               onClick={() => {
                 setExisted(false);
@@ -197,6 +334,9 @@ function App() {
           ]
         )}
       </div>
+      {capturing && (
+        <video ref={videoRef} id="video" style={{ width: "100%" }}></video>
+      )}
       {existed && (
         <div
           style={{
@@ -252,7 +392,7 @@ function App() {
           </button>
         </div>
       )}
-      {!creating && (
+      {!creating && !capturing && (
         <ul
           style={{
             display: "flex",
