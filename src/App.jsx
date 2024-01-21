@@ -9,6 +9,7 @@ function IntervalNumber() {
   const [number, setNumber] = useState(randomSixDigits());
   const [turn, setTurn] = useState(0); // 0 - 1 in 30s
   const duration = 20; // 30s
+  const timeLeft = (1 - turn) * duration;
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -29,7 +30,7 @@ function IntervalNumber() {
     <button
       style={{
         fontSize: "1.5rem",
-        color: "blueviolet",
+        color: timeLeft < 5 ? "red" : "blueviolet",
         display: "flex",
         alignItems: "center",
         width: "100%",
@@ -37,6 +38,7 @@ function IntervalNumber() {
         background: "none",
         padding: 0,
         cursor: "pointer",
+        animation: timeLeft < 5 ? "blink 1s infinite" : "none",
       }}
       onClick={async () => {
         try {
@@ -58,7 +60,10 @@ function IntervalNumber() {
           width: 36,
           height: 36,
           borderRadius: "50%",
-          background: `conic-gradient(transparent 0deg, transparent ${turn}turn, violet ${turn}turn)`,
+          background: `conic-gradient(transparent 0deg, transparent ${turn}turn, ${
+            timeLeft < 5 ? "red" : "violet"
+          } ${turn}turn)`,
+          animation: timeLeft < 5 ? "blink 1s infinite" : "none",
         }}
       />
     </button>
