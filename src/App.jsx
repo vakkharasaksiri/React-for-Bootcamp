@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
 function App() {
   const [countries, setCountries] = useState([]);
@@ -74,20 +74,43 @@ function App() {
                   country.name.official
                 ).includes(text)
               )
-              .map((country) => (
-                <li
-                  key={country.name.official}
-                  style={{
-                    display: "flex",
-                    borderBottom: "1px solid #e5e5e5",
-                    padding: "0.5rem 0",
-                  }}
-                >
-                  {country.flag}{" "}
-                  {country.translations[language]?.official ||
-                    country.name.official}
-                </li>
-              ))}
+              .map((country) => {
+                const name =
+                  country.translations[language]?.official ||
+                  country.name.official;
+                const elements = text ? name.split(text) : [name];
+                return (
+                  <li
+                    key={country.name.official}
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      borderBottom: "1px solid #e5e5e5",
+                      padding: "0.5rem 0",
+                      whiteSpace: "pre",
+                    }}
+                  >
+                    {country.flag}{" "}
+                    {elements.map((elm, index) =>
+                      index === 0 ? (
+                        elm
+                      ) : (
+                        <React.Fragment key={index}>
+                          <span
+                            style={{
+                              backgroundColor: "lightblue",
+                              color: "darkblue",
+                            }}
+                          >
+                            {text}
+                          </span>
+                          {elm}
+                        </React.Fragment>
+                      )
+                    )}
+                  </li>
+                );
+              })}
           </ul>
         </>
       )}
