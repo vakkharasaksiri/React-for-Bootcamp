@@ -6,6 +6,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState("eng");
   const [offline, setOffline] = useState(false);
+  const [openIndex, setOpenIndex] = useState(null);
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -101,7 +102,7 @@ function App() {
                   country.name.official
                 ).includes(text)
               )
-              .map((country) => {
+              .map((country, index) => {
                 const name =
                   country.translations[language]?.official ||
                   country.name.official;
@@ -115,6 +116,13 @@ function App() {
                       borderBottom: "1px solid #e5e5e5",
                       padding: "0.5rem 0",
                       whiteSpace: "pre",
+                    }}
+                    onClick={() => {
+                      if (openIndex === null || openIndex !== index) {
+                        setOpenIndex(index);
+                      } else {
+                        setOpenIndex(null);
+                      }
                     }}
                   >
                     {country.flag}{" "}
@@ -134,6 +142,17 @@ function App() {
                           {elm}
                         </React.Fragment>
                       )
+                    )}
+                    {openIndex === index && (
+                      <iframe
+                        width="100%"
+                        height="300"
+                        style={{ border: 0 }}
+                        loading="lazy"
+                        allowFullScreen
+                        referrerPolicy="no-referrer-when-downgrade"
+                        src={`https://www.google.com/maps/embed/v1/place?key=API_KEY&q=${country.name.official}`}
+                      ></iframe>
                     )}
                   </li>
                 );
