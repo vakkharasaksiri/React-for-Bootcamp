@@ -5,6 +5,7 @@ function App() {
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
   const [language, setLanguage] = useState("eng");
+  const [offline, setOffline] = useState(false);
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -18,6 +19,20 @@ function App() {
     }
     fetchData();
   }, []);
+  useEffect(() => {
+    function handleOffline() {
+      setOffline(true);
+    }
+    function handleOnline() {
+      setOffline(false);
+    }
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+    };
+  }, []);
   return (
     <main
       style={{
@@ -26,6 +41,18 @@ function App() {
       }}
     >
       <h1>Country Finder</h1>
+      {offline && (
+        <div
+          style={{
+            backgroundColor: "antiquewhite",
+            padding: "0.5rem",
+            fontSize: "0.875rem",
+            marginBottom: "1rem",
+          }}
+        >
+          ⚠️ You are offline. Please check your internet connection.
+        </div>
+      )}
       {loading ? (
         "loading..."
       ) : (
