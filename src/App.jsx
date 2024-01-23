@@ -1,7 +1,22 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
+  const [countries, setCountries] = useState([]);
   const [text, setText] = useState("");
+  const [loading, setLoading] = useState(false);
+  useEffect(() => {
+    async function fetchData() {
+      setLoading(true);
+      try {
+        const res = await fetch("https://restcountries.com/v3.1/all");
+        const data = await res.json();
+        setCountries(data);
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchData();
+  }, []);
   return (
     <main
       style={{
@@ -10,42 +25,42 @@ function App() {
       }}
     >
       <h1>Country Finder</h1>
-      <input
-        placeholder="Type to find..."
-        value={text}
-        onChange={(event) => {
-          setText(event.target.value);
-        }}
-        style={{
-          border: "none",
-          background: "#f5f5f5",
-          padding: "0.75rem 1rem",
-          width: "100%",
-          fontSize: "1rem",
-        }}
-      />
-      <ul style={{ margin: 0, padding: 0, marginTop: "1rem" }}>
-        {[
-          { name: "United States", flag: "🇺🇸" },
-          { name: "Brazil", flag: "🇧🇷" },
-          { name: "Thailand", flag: "🇹🇭" },
-          { name: "Japan", flag: "🇯🇵" },
-          { name: "China", flag: "🇨🇳" },
-        ]
-          .filter((country) => country.name.includes(text))
-          .map((country) => (
-            <li
-              key={country.name}
-              style={{
-                display: "flex",
-                borderBottom: "1px solid #e5e5e5",
-                padding: "0.5rem 0",
-              }}
-            >
-              {country.flag} {country.name}
-            </li>
-          ))}
-      </ul>
+      {loading ? (
+        "loading..."
+      ) : (
+        <>
+          <input
+            placeholder="Type to find..."
+            value={text}
+            onChange={(event) => {
+              setText(event.target.value);
+            }}
+            style={{
+              border: "none",
+              background: "#f5f5f5",
+              padding: "0.75rem 1rem",
+              width: "100%",
+              fontSize: "1rem",
+            }}
+          />
+          <ul style={{ margin: 0, padding: 0, marginTop: "1rem" }}>
+            {countries
+              .filter((country) => country.name.official.includes(text))
+              .map((country) => (
+                <li
+                  key={country.name.official}
+                  style={{
+                    display: "flex",
+                    borderBottom: "1px solid #e5e5e5",
+                    padding: "0.5rem 0",
+                  }}
+                >
+                  {country.flag} {country.name.official}
+                </li>
+              ))}
+          </ul>
+        </>
+      )}
     </main>
   );
 }
