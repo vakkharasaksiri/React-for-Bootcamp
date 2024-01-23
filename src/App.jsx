@@ -1,4 +1,7 @@
+import { useState } from "react";
+
 function App() {
+  const [text, setText] = useState("");
   return (
     <main
       style={{
@@ -9,6 +12,10 @@ function App() {
       <h1>Country Finder</h1>
       <input
         placeholder="Type to find..."
+        value={text}
+        onChange={(event) => {
+          setText(event.target.value);
+        }}
         style={{
           border: "none",
           background: "#f5f5f5",
@@ -24,18 +31,20 @@ function App() {
           { name: "Thailand", flag: "🇹🇭" },
           { name: "Japan", flag: "🇯🇵" },
           { name: "China", flag: "🇨🇳" },
-        ].map((country) => (
-          <li
-            key={country.name}
-            style={{
-              display: "flex",
-              borderBottom: "1px solid #e5e5e5",
-              padding: "0.5rem 0",
-            }}
-          >
-            {country.flag} {country.name}
-          </li>
-        ))}
+        ]
+          .filter((country) => country.name.includes(text))
+          .map((country) => (
+            <li
+              key={country.name}
+              style={{
+                display: "flex",
+                borderBottom: "1px solid #e5e5e5",
+                padding: "0.5rem 0",
+              }}
+            >
+              {country.flag} {country.name}
+            </li>
+          ))}
       </ul>
     </main>
   );
