@@ -4,6 +4,7 @@ function App() {
   const [countries, setCountries] = useState([]);
   const [text, setText] = useState("");
   const [loading, setLoading] = useState(false);
+  const [language, setLanguage] = useState("eng");
   useEffect(() => {
     async function fetchData() {
       setLoading(true);
@@ -29,23 +30,50 @@ function App() {
         "loading..."
       ) : (
         <>
-          <input
-            placeholder="Type to find..."
-            value={text}
-            onChange={(event) => {
-              setText(event.target.value);
-            }}
-            style={{
-              border: "none",
-              background: "#f5f5f5",
-              padding: "0.75rem 1rem",
-              width: "100%",
-              fontSize: "1rem",
-            }}
-          />
+          <div style={{ display: "flex", gap: "0.5rem" }}>
+            <input
+              placeholder="Type to find..."
+              value={text}
+              onChange={(event) => {
+                setText(event.target.value);
+              }}
+              style={{
+                border: "none",
+                background: "#f5f5f5",
+                padding: "0.75rem 1rem",
+                width: "100%",
+                fontSize: "1rem",
+                flex: "auto",
+              }}
+            />
+            <select
+              value={language}
+              onChange={(event) => {
+                setLanguage(event.target.value);
+              }}
+              style={{
+                border: "1px solid",
+                backgroundColor: "#fff",
+                fontSize: "1rem",
+                minWidth: "min-content",
+              }}
+            >
+              <option value="eng">eng</option>
+              <option value="ara">ara</option>
+              <option value="fra">fra</option>
+              <option value="ita">ita</option>
+              <option value="jpn">jpn</option>
+              <option value="zho">zho</option>
+            </select>
+          </div>
           <ul style={{ margin: 0, padding: 0, marginTop: "1rem" }}>
             {countries
-              .filter((country) => country.name.official.includes(text))
+              .filter((country) =>
+                (
+                  country.translations[language]?.official ||
+                  country.name.official
+                ).includes(text)
+              )
               .map((country) => (
                 <li
                   key={country.name.official}
@@ -55,7 +83,9 @@ function App() {
                     padding: "0.5rem 0",
                   }}
                 >
-                  {country.flag} {country.name.official}
+                  {country.flag}{" "}
+                  {country.translations[language]?.official ||
+                    country.name.official}
                 </li>
               ))}
           </ul>
