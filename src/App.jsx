@@ -75,6 +75,10 @@ function App() {
                 ).includes(text)
               )
               .map((country) => (
+                // 1. split the country name with the searched text using Array.split()
+                // 2. render the splitted texts and inserting the searched text between them
+                // 3. wrap the searched text with <span> or <mark> tag
+                // 4. use CSS white-space: pre; to preserve the spaces
                 <li
                   key={country.name.official}
                   style={{
