@@ -1,5 +1,31 @@
 import { useState } from "react";
 
+// 1. create a function to random an array of 6 numbers
+function randomSixDigits() {
+  return [...Array(6)].map(() => 
+    // implement random function here.
+  );
+}
+
+// 2. create a component "IntervalNumber" to display a number with interval
+function IntervalNumber() {
+  const [number, setNumber] = useState(randomSixDigits());
+
+  useEffect(() => {
+    // implement the logic to random a new set of number every 30 seconds.
+  }, [number]);
+
+  return (
+    <div style={{ fontSize: "1.5rem", color: "blueviolet" }}>
+      {number.map((num, i) => (
+        <span key={i} style={{ marginLeft: i === 3 ? "0.75rem" : 0 }}>
+          {num}
+        </span>
+      ))}
+    </div>
+  );
+}
+
 function App() {
   const [accounts, setAccounts] = useState([{ name: "Google", code: "1" }]);
   const [creating, setCreating] = useState(false);
