@@ -6,6 +6,7 @@ function randomSixDigits() {
 
 function IntervalNumber() {
   const [number, setNumber] = useState(randomSixDigits());
+  // 1. create a state named `turn` to store the current turn with initial value 0.
 
   useEffect(() => {
     const timeout = setTimeout(() => {
@@ -14,6 +15,9 @@ function IntervalNumber() {
     return () => clearTimeout(timeout);
   }, [number]);
 
+  // 2. create a useEffect to update the `turn` state every second.
+  //    💡 HINT: turn value is between 0-1, meaning the initial value is 0 and after 30 seconds it will be 1.
+
   return (
     <div style={{ fontSize: "1.5rem", color: "blueviolet" }}>
       {number.map((num, i) => (
@@ -21,6 +25,19 @@ function IntervalNumber() {
           {num}
         </span>
       ))}
+      {/* 3. create a <span> tag to represent the time-left indicator using CSS conic-gradient
+             💡 HINT: try this in your browser console to see how it works: 
+             <span
+              style={{
+                marginLeft: "auto",
+                display: "block",
+                width: 36,
+                height: 36,
+                borderRadius: "50%",
+                background: `conic-gradient(transparent 0deg, transparent 0.5turn, violet 0.5turn)`,
+              }}
+            />
+      */}
     </div>
   );
 }
