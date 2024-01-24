@@ -1,4 +1,5 @@
 function App() {
+  // 1. create a state (using `useState` hook) named `text` with initial value of empty string.
   return (
     <main
       style={{
@@ -9,6 +10,7 @@ function App() {
       <h1>Country Finder</h1>
       <input
         placeholder="Type to find..."
+        // 2. bind the `text` state to the input value
         style={{
           border: "none",
           background: "#f5f5f5",
@@ -24,18 +26,20 @@ function App() {
           { name: "Thailand", flag: "🇹🇭" },
           { name: "Japan", flag: "🇯🇵" },
           { name: "China", flag: "🇨🇳" },
-        ].map((country) => (
-          <li
-            key={country.name}
-            style={{
-              display: "flex",
-              borderBottom: "1px solid #e5e5e5",
-              padding: "0.5rem 0",
-            }}
-          >
-            {country.flag} {country.name}
-          </li>
-        ))}
+        ]
+          // 3. filter the countries based on the `text` state
+          .map((country) => (
+            <li
+              key={country.name}
+              style={{
+                display: "flex",
+                borderBottom: "1px solid #e5e5e5",
+                padding: "0.5rem 0",
+              }}
+            >
+              {country.flag} {country.name}
+            </li>
+          ))}
       </ul>
     </main>
   );
