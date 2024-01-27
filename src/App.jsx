@@ -1,3 +1,4 @@
+import React from 'react';
 import { useState, useEffect } from "react";
 
 function App() {
@@ -74,20 +75,37 @@ function App() {
                   country.name.official
                 ).includes(text)
               )
-              .map((country) => (
-                <li
-                  key={country.name.official}
-                  style={{
-                    display: "flex",
-                    borderBottom: "1px solid #e5e5e5",
-                    padding: "0.5rem 0",
-                  }}
-                >
-                  {country.flag}{" "}
-                  {country.translations[language]?.official ||
-                    country.name.official}
-                </li>
-              ))}
+              .map((country) => {
+
+                const name = country.translations[language]?.official ||
+                  country.name.official;
+
+                const splitText = name.split(text); //array of string
+
+                return (
+                  <li
+                    key={country.name.official}
+                    style={{
+                      display: "flex",
+                      borderBottom: "1px solid #e5e5e5",
+                      padding: "0.5rem 0",
+                      whiteSpace: "pre", //preserver whitespace
+                    }}
+                  >
+                    {country.flag} 
+                    {splitText.map((fragment,index) => {
+                      return (
+                        <React.Fragment key={index}>
+                          {index !== 0 && (
+                            <span style={{background:"salmon"}}>{text}</span>
+                          )}
+                          {fragment}
+                        </React.Fragment>
+                      );
+                    })}
+                  </li>
+                );
+            })}
           </ul>
         </>
       )}
